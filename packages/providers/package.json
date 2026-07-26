@@ -12,7 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@azure/identity": "^4.5.0",
     "@jove/core": "workspace:*",
     "@jove/shared": "workspace:*",
     "openai": "^4.77.0",

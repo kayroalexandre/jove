@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { logger } from '@jove/shared';
 
 export interface AzureFoundryClientOptions {
@@ -7,20 +6,19 @@ export interface AzureFoundryClientOptions {
   endpoint: string;
   /** Nome do deployment no Azure, ex: gpt-5.6-sol */
   deploymentName: string;
-  /** Escopo do token, padrão: https://ai.azure.com/.default */
-  tokenScope?: string;
+  /** API key do Azure AI Foundry */
+  apiKey: string;
 }
 
 /**
- * Cliente Azure AI Foundry usando o SDK OpenAI com DefaultAzureCredential.
+ * Cliente Azure AI Foundry usando o SDK OpenAI com API key direta.
  *
  * Este cliente encapsula a configuração de autenticação e expõe
  * a instância do OpenAI SDK para uso pelo provider.
  *
  * Autenticação:
- * - Usa DefaultAzureCredential (suporta managed identity, env vars, etc.)
- * - Gera token bearer via getBearerTokenProvider
- * - Passa o token como apiKey no cliente OpenAI
+ * - Usa API key direta passada no construtor
+ * - A chave é lida de AZURE_AI_API_KEY no .env
  */
 export class AzureFoundryClient {
   readonly endpoint: string;
@@ -30,20 +28,14 @@ export class AzureFoundryClient {
   constructor(opts: AzureFoundryClientOptions) {
     this.endpoint = opts.endpoint.replace(/\/$/, '');
     this.deploymentName = opts.deploymentName;
-    const scope = opts.tokenScope ?? 'https://ai.azure.com/.default';
-
-    const tokenProvider = getBearerTokenProvider(
-      new DefaultAzureCredential(),
-      scope,
-    );
 
     this.client = new OpenAI({
       baseURL: this.endpoint,
-      apiKey: tokenProvider as unknown as string,
+      apiKey: opts.apiKey,
     });
 
     logger.debug(
-      { endpoint: this.endpoint, deployment: this.deploymentName, scope },
+      { endpoint: this.endpoint, deployment: this.deploymentName },
       'AzureFoundryClient initialized',
     );
   }

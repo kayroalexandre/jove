@@ -20,6 +20,7 @@ export function loadProvidersConfig(): ProvidersConfig {
     providers['azure'] = {
       enabled: true,
       endpoint: process.env['AZURE_AI_ENDPOINT'],
+      apiKey: process.env['AZURE_AI_API_KEY'],
       apiVersion: process.env['AZURE_AI_API_VERSION'] ?? '2024-10-21',
       defaultModel,
       models,

@@ -2,12 +2,7 @@
 
 ## Onde colocar a API key
 
-A autenticação do Azure usa **DefaultAzureCredential** — não é preciso informar
-uma chave manualmente. O Azure encontra credenciais automaticamente via:
-
-1. **Service Principal** — `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`
-2. **Azure CLI** — `az login`
-3. **Managed Identity** — em produção no Azure
+A autenticação do Azure usa **API key direta**.
 
 ### 1. Criar o arquivo de configuração
 
@@ -23,14 +18,10 @@ DEFAULT_PROVIDER=azure
 
 # Azure AI Foundry
 AZURE_AI_ENDPOINT=https://tino-resource.services.ai.azure.com/openai/v1
+AZURE_AI_API_KEY=sua-chave-aqui
 AZURE_AI_DEPLOYMENT_NAME=gpt-5.6-sol
 AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
 AZURE_AI_API_VERSION=2024-10-21
-
-# Para autenticar com service principal (opcional):
-# AZURE_TENANT_ID=
-# AZURE_CLIENT_ID=
-# AZURE_CLIENT_SECRET=
 ```
 
 > ⚠️ **Nunca** commite o arquivo `.env`. Ele já está no `.gitignore`.
@@ -55,7 +46,7 @@ O código do Azure AI Foundry fica em:
 
 ```
 packages/providers/src/azure/foundry/
-├── client.ts      → AzureFoundryClient (SDK OpenAI + DefaultAzureCredential)
+├── client.ts      → AzureFoundryClient (SDK OpenAI + API key)
 ├── provider.ts    → AzureFoundryProvider (implementa AIProvider)
 └── index.ts       → exports
 ```

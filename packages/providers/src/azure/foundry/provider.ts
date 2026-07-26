@@ -18,15 +18,15 @@ import { AzureFoundryClient } from './client';
 export interface AzureFoundryProviderOptions {
   endpoint: string;
   deploymentName: string;
+  apiKey: string;
   models?: string[];
-  tokenScope?: string;
 }
 
 /**
  * Provider para Azure AI Foundry.
  *
  * Implementa a interface AIProvider usando o SDK OpenAI
- * com DefaultAzureCredential para autenticação.
+ * com API key direta para autenticação.
  *
  * Estrutura:
  * - AzureFoundryClient: encapsula a conexão com o Azure
@@ -42,7 +42,7 @@ export class AzureFoundryProvider implements AIProvider {
     this.client = new AzureFoundryClient({
       endpoint: opts.endpoint,
       deploymentName: opts.deploymentName,
-      tokenScope: opts.tokenScope,
+      apiKey: opts.apiKey,
     });
     this.modelList = opts.models ?? [opts.deploymentName];
   }
@@ -145,6 +145,10 @@ export function createAzureFoundryProvider(config: ProviderConfig): AzureFoundry
     throw new Error('AzureFoundryProvider requires endpoint in configuration');
   }
 
+  if (!config.apiKey) {
+    throw new Error('AzureFoundryProvider requires apiKey in configuration');
+  }
+
   // O deploymentName pode vir de defaultModel ou do primeiro modelo da lista
   const deploymentName = config.defaultModel ?? config.models?.[0];
   if (!deploymentName) {
@@ -156,6 +160,7 @@ export function createAzureFoundryProvider(config: ProviderConfig): AzureFoundry
   return new AzureFoundryProvider({
     endpoint: config.endpoint,
     deploymentName,
+    apiKey: config.apiKey,
     models: config.models,
   });
 }
