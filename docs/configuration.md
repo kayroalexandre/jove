@@ -2,9 +2,14 @@
 
 ## Onde colocar a API key
 
-Toda configuração de credenciais fica no arquivo `.env` na raiz do projeto.
+A autenticação do Azure usa **DefaultAzureCredential** — não é preciso informar
+uma chave manualmente. O Azure encontra credenciais automaticamente via:
 
-### 1. Criar o arquivo
+1. **Service Principal** — `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`
+2. **Azure CLI** — `az login`
+3. **Managed Identity** — em produção no Azure
+
+### 1. Criar o arquivo de configuração
 
 ```bash
 cp .env.example .env
@@ -12,66 +17,69 @@ cp .env.example .env
 
 ### 2. Editar `.env`
 
-Preencha as variáveis do provedor que deseja habilitar:
-
 ```env
 # Provider padrão
 DEFAULT_PROVIDER=azure
 
 # Azure AI Foundry
-AZURE_AI_ENDPOINT=https://SEU-RESOURCE.services.ai.azure.com
-AZURE_AI_API_KEY=sua-chave-aqui
+AZURE_AI_ENDPOINT=https://tino-resource.services.ai.azure.com/openai/v1
+AZURE_AI_DEPLOYMENT_NAME=gpt-5.6-sol
+AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
 AZURE_AI_API_VERSION=2024-10-21
-AZURE_AI_DEFAULT_MODEL=gpt-4o
+
+# Para autenticar com service principal (opcional):
+# AZURE_TENANT_ID=
+# AZURE_CLIENT_ID=
+# AZURE_CLIENT_SECRET=
 ```
 
 > ⚠️ **Nunca** commite o arquivo `.env`. Ele já está no `.gitignore`.
 
-## Onde colocar a lista de modelos
+## Onde configurar os modelos
 
-Os modelos são descobertos automaticamente a partir das variáveis de ambiente:
+Os modelos são lidos das variáveis de ambiente:
 
-- `AZURE_AI_DEFAULT_MODEL` define o modelo padrão do Azure.
-- No futuro, `AZURE_AI_MODELS` permitirá listar múltiplos modelos separados por vírgula.
-
-Exemplo:
+- `AZURE_AI_DEPLOYMENT_NAME` → nome do deployment no Azure
+- `AZURE_AI_DEFAULT_MODEL` → modelo padrão (usado se modelo não for especificado)
+- `AZURE_AI_MODELS` → lista separada por vírgula (opcional)
 
 ```env
-AZURE_AI_DEFAULT_MODEL=gpt-4o
-# Futuro: AZURE_AI_MODELS=gpt-4o,gpt-4o-mini,o3
+AZURE_AI_DEPLOYMENT_NAME=gpt-5.6-sol
+AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
+# AZURE_AI_MODELS=gpt-5.6-sol,gpt-4o,o3
+```
+
+## Estrutura do AzureFoundryProvider
+
+O código do Azure AI Foundry fica em:
+
+```
+packages/providers/src/azure/foundry/
+├── client.ts      → AzureFoundryClient (SDK OpenAI + DefaultAzureCredential)
+├── provider.ts    → AzureFoundryProvider (implementa AIProvider)
+└── index.ts       → exports
 ```
 
 ## Como o gateway resolve modelos
 
-1. O gateway lê `.env` e registra provedores habilitados no `ProviderRegistry`.
-2. Cada modelo é indexado no registry (modelId → providerName).
-3. Quando uma requisição chega, o registry resolve qual provedor atende o modelo.
-4. Se o modelo não estiver mapeado, usa o `DEFAULT_PROVIDER`.
+1. O gateway lê `.env` via `loadProvidersConfig()` em `packages/shared/src/config.ts`
+2. `bootstrapRegistry()` cria o `AzureFoundryProvider` e registra no `ProviderRegistry`
+3. Cada modelo é indexado (modelId → providerName)
+4. Quando uma requisição chega, o registry resolve qual provedor atende
 
-## Arquitetura do registry
+## Adicionar um novo provedor
 
-```
-.env → loadProvidersConfig() → ProviderRegistry
-                                    ↓
-                          register(provider)
-                          registerModel(id, providerName)
-                                    ↓
-                          resolve(modelId) → AIProvider
-```
-
-## Adicionar um novo provedor no futuro
-
-1. Criar a classe em `packages/providers/src/novo-provider.ts`
+1. Criar a classe em `packages/providers/src/novo-provider/`
 2. Implementar a interface `AIProvider` de `@jove/core`
 3. Adicionar a leitura de env em `packages/shared/src/config.ts`
 4. Adicionar o case em `packages/providers/src/registry-bootstrap.ts`
 
 ## Endpoints atuais
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/health` | Healthcheck do gateway |
-| GET | `/v1/models` | Lista modelos disponíveis |
-| POST | `/v1/chat/completions` | _(Passo 7)_ |
-| POST | `/v1/responses` | _(Passo 7)_ |
-| POST | `/v1/embeddings` | _(Passo 7)_ |
+| Método | Rota | Descrição | Status |
+|--------|------|-----------|--------|
+| GET | `/health` | Healthcheck | ✅ |
+| GET | `/v1/models` | Lista modelos | ✅ |
+| POST | `/v1/chat/completions` | Chat | ✅ (Passo 7) |
+| POST | `/v1/responses` | Responses | ✅ (Passo 7) |
+| POST | `/v1/embeddings` | Embeddings | ✅ (Passo 7) |

@@ -1,9 +1,9 @@
 import type { AIProvider, ChatCompletionRequest, ChatCompletionResponse, EmbeddingRequest, EmbeddingResponse, ProviderModel, ResponseRequest, ResponseResponse } from '@jove/core';
 import { logger } from '@jove/shared';
-import { AzureProvider, createAzureProvider } from './azure';
 import { bootstrapRegistry } from './registry-bootstrap';
 
-export { AzureProvider, createAzureProvider };
+export { AzureProvider, createAzureProvider } from './azure';
+export { AzureFoundryClient, AzureFoundryProvider, createAzureFoundryProvider } from './azure/foundry';
 export { bootstrapRegistry };
 
 /**

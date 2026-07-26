@@ -1,5 +1,5 @@
 import type { ProviderRegistry, ProvidersConfig } from '@jove/core';
-import { AzureProvider, createAzureProvider } from './azure';
+import { createAzureFoundryProvider } from './azure/foundry';
 
 /**
  * Registra provedores habilitados no registry a partir da configuração.
@@ -18,11 +18,9 @@ export function bootstrapRegistry(
       continue;
     }
 
-    let provider: AzureProvider;
-
     switch (name) {
-      case 'azure':
-        provider = createAzureProvider(providerConfig);
+      case 'azure': {
+        const provider = createAzureFoundryProvider(providerConfig);
         registry.register(provider);
 
         // Indexa modelos do Azure no registry
@@ -33,6 +31,7 @@ export function bootstrapRegistry(
           registry.registerModel(providerConfig.defaultModel, provider.name);
         }
         break;
+      }
 
       default:
         // Futuros provedores serão adicionados aqui

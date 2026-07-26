@@ -8,15 +8,21 @@ import type { ProviderConfig, ProvidersConfig } from '@jove/core';
 export function loadProvidersConfig(): ProvidersConfig {
   const providers: ProvidersConfig = {};
 
-  // Azure
+  // Azure AI Foundry
   if (process.env['AZURE_AI_ENDPOINT']) {
+    const modelsCsv = process.env['AZURE_AI_MODELS'];
+    const models = modelsCsv ? modelsCsv.split(',').map((m) => m.trim()) : undefined;
+    const defaultModel =
+      process.env['AZURE_AI_DEFAULT_MODEL'] ??
+      process.env['AZURE_AI_DEPLOYMENT_NAME'] ??
+      models?.[0];
+
     providers['azure'] = {
       enabled: true,
       endpoint: process.env['AZURE_AI_ENDPOINT'],
-      apiKeyEnv: 'AZURE_AI_API_KEY',
-      apiKey: process.env['AZURE_AI_API_KEY'],
       apiVersion: process.env['AZURE_AI_API_VERSION'] ?? '2024-10-21',
-      defaultModel: process.env['AZURE_AI_DEFAULT_MODEL'],
+      defaultModel,
+      models,
     };
   }
 
