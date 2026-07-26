@@ -19,6 +19,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@jove/core": "workspace:*",
+        "@jove/openai-api": "workspace:*",
         "@jove/providers": "workspace:*",
         "@jove/shared": "workspace:*",
         "dotenv": "^16.4.0",

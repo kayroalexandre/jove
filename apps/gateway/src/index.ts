@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { ProviderRegistry } from '@jove/core';
 import { bootstrapRegistry, StubProvider } from '@jove/providers';
 import { getDefaultProvider, loadProvidersConfig, logger } from '@jove/shared';
+import { registerApiRoutes } from './routes';
 
 dotenv.config();
 
@@ -44,6 +45,9 @@ app.get('/v1/models', async () => {
     })),
   };
 });
+
+// ── Rotas POST do MVP ─────────────────────────────────────────
+registerApiRoutes(app, registry, defaultProvider);
 
 async function main() {
   try {
