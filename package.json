@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "bun run --filter @jove/gateway dev",
     "build": "bun run --filter '*' build",
-    "test": "bun run --filter '*' test",
+    "test": "bun run --filter @jove/core test && bun run --filter @jove/openai-api test && bun run --filter @jove/gateway test",
     "lint": "bun run --filter '*' lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
