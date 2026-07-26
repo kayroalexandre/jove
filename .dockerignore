@@ -1,0 +1,43 @@
+# Git
+.git/
+.gitignore
+
+# Dependências locais
+node_modules/
+**/node_modules/
+
+# Build e testes
+dist/
+**/dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Ambiente e credenciais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+*.log
+logs/
+
+# Arquivos não necessários no runtime
+init.md
+docs/
+tests/
+**/tests/
+vitest.config.ts
+eslint.config.ts
+.prettierrc.json
+.prettierignore
+README.md

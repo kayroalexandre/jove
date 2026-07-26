@@ -19,9 +19,19 @@ bun run dev
 
 - `GET /health` — healthcheck
 - `GET /v1/models` — lista modelos disponíveis
-- `POST /v1/chat/completions` — _(em breve)_
-- `POST /v1/responses` — _(em breve)_
-- `POST /v1/embeddings` — _(em breve)_
+- `POST /v1/chat/completions` — chat compatível com OpenAI
+- `POST /v1/responses` — Responses API compatível
+- `POST /v1/embeddings` — geração de embeddings
+
+## Docker
+
+Após configurar o arquivo `.env`:
+
+```bash
+docker compose up --build -d
+```
+
+Consulte `docs/docker.md` para instruções completas.
 
 ## Estrutura
 
@@ -36,3 +46,10 @@ packages/shared    — utilitários e logger
 ## Ambiente
 
 Veja `.env.example` para todas as variáveis suportadas.
+
+## Validação
+
+```bash
+bun run typecheck
+bun run test
+```
