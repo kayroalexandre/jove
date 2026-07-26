@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import {
   GatewayError,
   type ProviderRegistry,
@@ -25,6 +25,7 @@ export function registerApiRoutes(
 ): void {
   // ── POST /v1/chat/completions ──────────────────────────────
   app.post('/v1/chat/completions', async (request, reply) => {
+    const requestId = request.id;
     const parsed = chatCompletionRequestSchema.safeParse(request.body);
 
     if (!parsed.success) {
@@ -32,6 +33,7 @@ export function registerApiRoutes(
         error: {
           message: 'Invalid request body',
           type: 'invalid_request_error',
+          requestId,
           details: parsed.error.issues,
         },
       });
@@ -39,10 +41,11 @@ export function registerApiRoutes(
 
     const body = parsed.data;
     logger.info(
-      { model: body.model, messages: body.messages.length, stream: body.stream },
+      { requestId, model: body.model, messages: body.messages.length, stream: body.stream },
       'chat/completions: request received',
     );
 
+    const startTime = Date.now();
     try {
       const provider = registry.resolve(body.model, defaultProvider);
       const result = await provider.chat({
@@ -53,14 +56,20 @@ export function registerApiRoutes(
         stream: body.stream,
       });
 
+      logger.info(
+        { requestId, provider: provider.name, durationMs: Date.now() - startTime },
+        'chat/completions: provider responded',
+      );
+
       return reply.send(result);
     } catch (err) {
-      return handleError(err, reply);
+      return handleError(err, reply, requestId, Date.now() - startTime);
     }
   });
 
   // ── POST /v1/responses ──────────────────────────────────────
   app.post('/v1/responses', async (request, reply) => {
+    const requestId = request.id;
     const parsed = responseRequestSchema.safeParse(request.body);
 
     if (!parsed.success) {
@@ -68,14 +77,16 @@ export function registerApiRoutes(
         error: {
           message: 'Invalid request body',
           type: 'invalid_request_error',
+          requestId,
           details: parsed.error.issues,
         },
       });
     }
 
     const body = parsed.data;
-    logger.info({ model: body.model }, 'responses: request received');
+    logger.info({ requestId, model: body.model }, 'responses: request received');
 
+    const startTime = Date.now();
     try {
       const provider = registry.resolve(body.model, defaultProvider);
       const result = await provider.responses({
@@ -83,14 +94,20 @@ export function registerApiRoutes(
         input: body.input,
       });
 
+      logger.info(
+        { requestId, provider: provider.name, durationMs: Date.now() - startTime },
+        'responses: provider responded',
+      );
+
       return reply.send(result);
     } catch (err) {
-      return handleError(err, reply);
+      return handleError(err, reply, requestId, Date.now() - startTime);
     }
   });
 
   // ── POST /v1/embeddings ─────────────────────────────────────
   app.post('/v1/embeddings', async (request, reply) => {
+    const requestId = request.id;
     const parsed = embeddingRequestSchema.safeParse(request.body);
 
     if (!parsed.success) {
@@ -98,14 +115,16 @@ export function registerApiRoutes(
         error: {
           message: 'Invalid request body',
           type: 'invalid_request_error',
+          requestId,
           details: parsed.error.issues,
         },
       });
     }
 
     const body = parsed.data;
-    logger.info({ model: body.model }, 'embeddings: request received');
+    logger.info({ requestId, model: body.model }, 'embeddings: request received');
 
+    const startTime = Date.now();
     try {
       const provider = registry.resolve(body.model, defaultProvider);
       const result = await provider.embeddings({
@@ -113,9 +132,14 @@ export function registerApiRoutes(
         input: body.input,
       });
 
+      logger.info(
+        { requestId, provider: provider.name, durationMs: Date.now() - startTime },
+        'embeddings: provider responded',
+      );
+
       return reply.send(result);
     } catch (err) {
-      return handleError(err, reply);
+      return handleError(err, reply, requestId, Date.now() - startTime);
     }
   });
 }
@@ -123,23 +147,46 @@ export function registerApiRoutes(
 /**
  * Tratamento centralizado de erros.
  */
-function handleError(err: unknown, reply: ReturnType<import('fastify').FastifyReply['status']>): void {
+function handleError(
+  err: unknown,
+  reply: FastifyReply,
+  requestId: string,
+  durationMs: number,
+): void {
   if (err instanceof GatewayError) {
+    logger.warn(
+      { requestId, code: err.code, statusCode: err.statusCode, durationMs },
+      'gateway error',
+    );
     reply.status(err.statusCode).send({
       error: {
         message: err.message,
         type: err.code,
+        requestId,
         details: err.details,
       },
     });
     return;
   }
 
-  logger.error({ err }, 'Unhandled error in route');
+  logger.error(
+    {
+      requestId,
+      err: {
+        type: err instanceof Error ? err.constructor.name : 'unknown',
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      },
+      durationMs,
+    },
+    'unhandled error in route',
+  );
+
   reply.status(500).send({
     error: {
       message: 'Internal server error',
       type: 'internal_error',
+      requestId,
     },
   });
 }

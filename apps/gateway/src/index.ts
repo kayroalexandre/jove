@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { ProviderRegistry } from '@jove/core';
 import { bootstrapRegistry, StubProvider } from '@jove/providers';
 import { getDefaultProvider, loadProvidersConfig, logger } from '@jove/shared';
+import { registerObservability } from './observability';
 import { registerApiRoutes } from './routes';
 
 dotenv.config();
@@ -30,6 +31,9 @@ const defaultProvider = getDefaultProvider();
 const app = Fastify({
   logger: false,
 });
+
+// ── Observabilidade: request ID + logs com timing ────────────
+void registerObservability(app);
 
 app.get('/health', async () => ({ status: 'ok', timestamp: Date.now() }));
 
