@@ -9,3 +9,5 @@ export const logger = pino({
 });
 
 export type Logger = typeof logger;
+
+export * from './config';

@@ -55,6 +55,7 @@
       "name": "@jove/shared",
       "version": "0.1.0",
       "dependencies": {
+        "@jove/core": "workspace:*",
         "pino": "^9.5.0",
         "pino-pretty": "^11.3.0",
       },

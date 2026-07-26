@@ -1,9 +1,13 @@
 import type { AIProvider, ChatCompletionRequest, ChatCompletionResponse, EmbeddingRequest, EmbeddingResponse, ProviderModel, ResponseRequest, ResponseResponse } from '@jove/core';
 import { logger } from '@jove/shared';
+import { AzureProvider, createAzureProvider } from './azure';
+import { bootstrapRegistry } from './registry-bootstrap';
+
+export { AzureProvider, createAzureProvider };
+export { bootstrapRegistry };
 
 /**
- * Stub de provedor — será substituído por implementações reais (Azure, OpenAI, etc.).
- * Apenas mantém o registry funcional desde o Passo 1.
+ * Stub de provedor — placeholder para testes e desenvolvimento.
  */
 export class StubProvider implements AIProvider {
   readonly name = 'stub';

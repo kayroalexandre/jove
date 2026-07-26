@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@jove/core": "workspace:*",
     "pino": "^9.5.0",
     "pino-pretty": "^11.3.0"
   }
