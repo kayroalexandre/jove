@@ -15,6 +15,7 @@ COPY packages/providers/package.json ./packages/providers/
 COPY packages/openai-api/package.json ./packages/openai-api/
 COPY packages/shared/package.json ./packages/shared/
 
+# Materializa os links dos workspaces apenas com dependências de produção.
 RUN bun install --frozen-lockfile --production
 
 # ── Runtime ────────────────────────────────────────────────────
@@ -27,6 +28,7 @@ ENV LOG_LEVEL=info
 
 # Executa como usuário não-root fornecido pela imagem Bun
 COPY --from=deps --chown=bun:bun /app/node_modules ./node_modules
+COPY --from=deps --chown=bun:bun /app/apps/gateway/node_modules ./apps/gateway/node_modules
 COPY --from=deps --chown=bun:bun /app/packages ./packages
 
 # Copia apenas os arquivos necessários para execução

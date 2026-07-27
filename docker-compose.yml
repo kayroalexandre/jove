@@ -14,6 +14,13 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 3000
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DEFAULT_PROVIDER: ${DEFAULT_PROVIDER:-azure}
+      AZURE_AI_ENDPOINT: ${AZURE_AI_ENDPOINT:?Defina AZURE_AI_ENDPOINT no arquivo .env}
+      AZURE_AI_API_KEY: ${AZURE_AI_API_KEY:?Defina AZURE_AI_API_KEY no arquivo .env}
+      AZURE_AI_DEPLOYMENT_NAME: ${AZURE_AI_DEPLOYMENT_NAME:?Defina AZURE_AI_DEPLOYMENT_NAME no arquivo .env}
+      AZURE_AI_DEFAULT_MODEL: ${AZURE_AI_DEFAULT_MODEL:-${AZURE_AI_DEPLOYMENT_NAME}}
+      AZURE_AI_API_VERSION: ${AZURE_AI_API_VERSION:-2024-10-21}
     healthcheck:
       test:
         - CMD

@@ -23,6 +23,8 @@ AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
 ```
 
 Nunca adicione `.env` ao Git.
+O Compose interrompe antes de iniciar caso endpoint, API key ou deployment não
+estejam preenchidos.
 
 ## 2. Executar com Docker Compose
 
