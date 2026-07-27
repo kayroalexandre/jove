@@ -14,8 +14,7 @@ export async function registerObservability(app: FastifyInstance): Promise<void>
   // Hook executado antes de cada rota
   app.addHook('onRequest', async (request, reply) => {
     const requestId =
-      (request.headers['x-request-id'] as string | undefined) ??
-      crypto.randomUUID();
+      (request.headers['x-request-id'] as string | undefined) ?? crypto.randomUUID();
 
     request.id = requestId;
     reply.header('X-Request-Id', requestId);
@@ -56,9 +55,10 @@ export async function registerObservability(app: FastifyInstance): Promise<void>
     const startTime = (request as RequestWithTiming).__startTime ?? Date.now();
     const durationMs = Date.now() - startTime;
 
-    const errInfo = err instanceof Error
-      ? { type: err.constructor.name, message: err.message, stack: err.stack }
-      : { type: 'unknown', message: String(err), stack: undefined };
+    const errInfo =
+      err instanceof Error
+        ? { type: err.constructor.name, message: err.message, stack: err.stack }
+        : { type: 'unknown', message: String(err), stack: undefined };
 
     logger.error(
       {

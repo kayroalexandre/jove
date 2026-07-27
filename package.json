@@ -16,16 +16,39 @@
     "lint": "bun run --filter '*' lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit -p tsconfig.base.json"
+    "typecheck": "tsc --noEmit -p tsconfig.base.json",
+    "validate": "bun run format:check && bun run lint && bun run typecheck && bun run test",
+    "ci:check": "bun run validate",
+    "docker:build": "docker build -t jove-gateway:ci .",
+    "docker:smoke": "bash ./scripts/smoke-test.sh",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version-packages": "changeset version && bun install",
+    "release:plan": "changeset status --verbose",
+    "release:promote": "bash ./scripts/release/promote.sh",
+    "release:noop": "echo 'No package publish step configured'"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,ts,json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "eslint --fix"
+    ]
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.18.0",
     "@types/node": "^22.10.0",
+    "eslint": "^9.18.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.4.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.20.0",
-    "vitest": "^2.1.0",
-    "eslint": "^9.18.0",
-    "prettier": "^3.4.0"
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=22"

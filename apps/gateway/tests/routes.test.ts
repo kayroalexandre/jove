@@ -1,6 +1,16 @@
 import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
-import { ProviderRegistry, type AIProvider, type ChatCompletionRequest, type ChatCompletionResponse, type EmbeddingRequest, type EmbeddingResponse, type ProviderModel, type ResponseRequest, type ResponseResponse } from '@jove/core';
+import {
+  ProviderRegistry,
+  type AIProvider,
+  type ChatCompletionRequest,
+  type ChatCompletionResponse,
+  type EmbeddingRequest,
+  type EmbeddingResponse,
+  type ProviderModel,
+  type ResponseRequest,
+  type ResponseResponse,
+} from '@jove/core';
 import { registerApiRoutes } from '../src/routes';
 
 // Mock provider para testes de integração
@@ -16,7 +26,11 @@ const mockProvider: AIProvider = {
       created: 1234567890,
       model: input.model,
       choices: [
-        { index: 0, message: { role: 'assistant', content: 'mock response' }, finishReason: 'stop' },
+        {
+          index: 0,
+          message: { role: 'assistant', content: 'mock response' },
+          finishReason: 'stop',
+        },
       ],
     };
   },

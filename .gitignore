@@ -31,6 +31,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Tooling
+.husky/_/
+
 # Test coverage
 coverage/
 .nyc_output/

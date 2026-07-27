@@ -50,6 +50,18 @@ Veja `.env.example` para todas as variáveis suportadas.
 ## Validação
 
 ```bash
-bun run typecheck
-bun run test
+bun run validate
 ```
+
+## Pipeline de engenharia
+
+O projeto agora inclui base profissional para:
+
+- desenvolvimento com validação local
+- hooks de Git para pre-commit e commit-msg
+- prevenção de regressão com CI
+- publicação de imagem no GHCR
+- versionamento com Changesets
+- deploy contínuo para `staging` e promoção manual para `production`
+
+Consulte `docs/engineering-pipeline.md`, `docs/branch-protection.md` e `docs/server-deploy.md`.

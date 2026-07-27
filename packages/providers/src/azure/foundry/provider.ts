@@ -9,9 +9,7 @@ import type {
   ResponseRequest,
   ResponseResponse,
 } from '@jove/core';
-import type {
-  ChatCompletionMessageParam,
-} from 'openai/resources';
+import type { ChatCompletionMessageParam } from 'openai/resources';
 import { logger } from '@jove/shared';
 import { AzureFoundryClient } from './client';
 
@@ -65,8 +63,7 @@ export class AzureFoundryProvider implements AIProvider {
     const completion = await this.client.client.chat.completions.create({
       model: input.model,
       messages: input.messages.map(
-        (m) =>
-          ({ role: m.role, content: m.content }) as ChatCompletionMessageParam,
+        (m) => ({ role: m.role, content: m.content }) as ChatCompletionMessageParam,
       ),
       temperature: input.temperature,
       max_tokens: input.maxTokens,
@@ -89,10 +86,7 @@ export class AzureFoundryProvider implements AIProvider {
   }
 
   async responses(input: ResponseRequest): Promise<ResponseResponse> {
-    logger.info(
-      { provider: this.name, model: input.model },
-      'responses: calling Azure AI Foundry',
-    );
+    logger.info({ provider: this.name, model: input.model }, 'responses: calling Azure AI Foundry');
 
     // Converte input para o formato esperado pelo SDK
     const inputText =
@@ -118,8 +112,7 @@ export class AzureFoundryProvider implements AIProvider {
       'embeddings: calling Azure AI Foundry',
     );
 
-    const embeddingInput =
-      typeof input.input === 'string' ? input.input : input.input;
+    const embeddingInput = typeof input.input === 'string' ? input.input : input.input;
 
     const result = await this.client.client.embeddings.create({
       model: input.model,

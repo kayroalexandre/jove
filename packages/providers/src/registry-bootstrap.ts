@@ -9,10 +9,7 @@ import { createAzureFoundryProvider } from './azure/foundry';
  * 2. registra no registry;
  * 3. indexa cada modelo no registry (modelId -> providerName).
  */
-export function bootstrapRegistry(
-  registry: ProviderRegistry,
-  config: ProvidersConfig,
-): void {
+export function bootstrapRegistry(registry: ProviderRegistry, config: ProvidersConfig): void {
   for (const [name, providerConfig] of Object.entries(config)) {
     if (!providerConfig.enabled) {
       continue;

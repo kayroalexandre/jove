@@ -1,0 +1,82 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows:
+      - release
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      image_tag:
+        description: Image tag to deploy
+        required: true
+        default: latest
+        type: string
+
+jobs:
+  deploy-staging:
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 20
+
+    steps:
+      - name: Resolve image tag
+        id: vars
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "image_tag=${{ inputs.image_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "image_tag=main" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy staging over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd ${{ secrets.DEPLOY_PATH }}
+            export IMAGE_REPOSITORY=ghcr.io/${{ github.repository_owner }}/jove-gateway
+            export IMAGE_TAG=${{ steps.vars.outputs.image_tag }}
+            echo "Deploying ${IMAGE_REPOSITORY}:${IMAGE_TAG} to staging"
+            echo "${{ secrets.GHCR_READ_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+            docker compose -f docker-compose.release.yml pull
+            docker compose -f docker-compose.release.yml up -d --remove-orphans
+            docker image prune -f
+
+  deploy-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+
+    steps:
+      - name: Deploy production over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd ${{ secrets.DEPLOY_PATH }}
+            export IMAGE_REPOSITORY=ghcr.io/${{ github.repository_owner }}/jove-gateway
+            export IMAGE_TAG=${{ inputs.image_tag }}
+            echo "Deploying ${IMAGE_REPOSITORY}:${IMAGE_TAG} to production"
+            echo "${{ secrets.GHCR_READ_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+            docker compose -f docker-compose.release.yml pull
+            docker compose -f docker-compose.release.yml up -d --remove-orphans
+            docker image prune -f

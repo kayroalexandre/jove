@@ -1,8 +1,5 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
-import {
-  GatewayError,
-  type ProviderRegistry,
-} from '@jove/core';
+import { GatewayError, type ProviderRegistry } from '@jove/core';
 import {
   chatCompletionRequestSchema,
   embeddingRequestSchema,

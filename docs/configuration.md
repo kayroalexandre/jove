@@ -76,10 +76,10 @@ packages/providers/src/azure/foundry/
 
 ## Endpoints atuais
 
-| Método | Rota | Descrição | Status |
-|--------|------|-----------|--------|
-| GET | `/health` | Healthcheck | ✅ |
-| GET | `/v1/models` | Lista modelos | ✅ |
-| POST | `/v1/chat/completions` | Chat | ✅ (Passo 7) |
-| POST | `/v1/responses` | Responses | ✅ (Passo 7) |
-| POST | `/v1/embeddings` | Embeddings | ✅ (Passo 7) |
+| Método | Rota                   | Descrição     | Status       |
+| ------ | ---------------------- | ------------- | ------------ |
+| GET    | `/health`              | Healthcheck   | ✅           |
+| GET    | `/v1/models`           | Lista modelos | ✅           |
+| POST   | `/v1/chat/completions` | Chat          | ✅ (Passo 7) |
+| POST   | `/v1/responses`        | Responses     | ✅ (Passo 7) |
+| POST   | `/v1/embeddings`       | Embeddings    | ✅ (Passo 7) |

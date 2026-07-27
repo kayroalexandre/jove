@@ -75,9 +75,7 @@ export class AzureProvider implements AIProvider {
       { provider: this.name, model: input.model },
       'chat: delegating to Azure (not yet implemented)',
     );
-    throw new Error(
-      `AzureProvider.chat() will be implemented in Step 6. Model: ${input.model}`,
-    );
+    throw new Error(`AzureProvider.chat() will be implemented in Step 6. Model: ${input.model}`);
   }
 
   async responses(input: ResponseRequest): Promise<ResponseResponse> {
@@ -106,9 +104,7 @@ export class AzureProvider implements AIProvider {
  */
 export function createAzureProvider(config: ProviderConfig): AzureProvider {
   if (!config.endpoint || !config.apiKey) {
-    throw new Error(
-      'AzureProvider requires endpoint and apiKey in configuration',
-    );
+    throw new Error('AzureProvider requires endpoint and apiKey in configuration');
   }
 
   return new AzureProvider({
