@@ -20,6 +20,7 @@ AZURE_AI_ENDPOINT=https://tino-resource.services.ai.azure.com/openai/v1
 AZURE_AI_API_KEY=sua-chave-aqui
 AZURE_AI_DEPLOYMENT_NAME=gpt-5.6-sol
 AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
+AZURE_AI_MODELS=gpt-5.6-sol,FW-GLM-5.2,gpt-5.6-luna,gpt-5.6-terra,model-router
 ```
 
 Nunca adicione `.env` ao Git.

@@ -20,6 +20,7 @@ services:
       AZURE_AI_API_KEY: ${AZURE_AI_API_KEY:?Defina AZURE_AI_API_KEY no arquivo .env}
       AZURE_AI_DEPLOYMENT_NAME: ${AZURE_AI_DEPLOYMENT_NAME:?Defina AZURE_AI_DEPLOYMENT_NAME no arquivo .env}
       AZURE_AI_DEFAULT_MODEL: ${AZURE_AI_DEFAULT_MODEL:-${AZURE_AI_DEPLOYMENT_NAME}}
+      AZURE_AI_MODELS: ${AZURE_AI_MODELS:-gpt-5.6-sol,FW-GLM-5.2,gpt-5.6-luna,gpt-5.6-terra,model-router}
       AZURE_AI_API_VERSION: ${AZURE_AI_API_VERSION:-2024-10-21}
     healthcheck:
       test:

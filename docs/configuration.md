@@ -21,6 +21,7 @@ AZURE_AI_ENDPOINT=https://tino-resource.services.ai.azure.com/openai/v1
 AZURE_AI_API_KEY=sua-chave-aqui
 AZURE_AI_DEPLOYMENT_NAME=gpt-5.6-sol
 AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
+AZURE_AI_MODELS=gpt-5.6-sol,FW-GLM-5.2,gpt-5.6-luna,gpt-5.6-terra,model-router
 AZURE_AI_API_VERSION=2024-10-21
 ```
 
@@ -37,8 +38,16 @@ Os modelos são lidos das variáveis de ambiente:
 ```env
 AZURE_AI_DEPLOYMENT_NAME=gpt-5.6-sol
 AZURE_AI_DEFAULT_MODEL=gpt-5.6-sol
-# AZURE_AI_MODELS=gpt-5.6-sol,gpt-4o,o3
+AZURE_AI_MODELS=gpt-5.6-sol,FW-GLM-5.2,gpt-5.6-luna,gpt-5.6-terra,model-router
 ```
+
+Deployments configurados atualmente:
+
+- `gpt-5.6-sol` — padrão
+- `FW-GLM-5.2`
+- `gpt-5.6-luna`
+- `gpt-5.6-terra`
+- `model-router`
 
 ## Estrutura do AzureFoundryProvider
 
